@@ -1,7 +1,7 @@
 use alloy_primitives::Address;
 use alloy_provider::ProviderBuilder;
 use alloy_sol_types::sol;
-use raiko_lib::prover::ProverResult;
+use raiko_lib::prover::{ProverError, ProverResult};
 use reth_primitives::B256;
 use sp1_sdk::network::proto::network::twirp::url::Url;
 use std::{env, str::FromStr};
@@ -47,9 +47,11 @@ pub(crate) async fn verify_sol_by_contract_call(fixture: &RaikoProofFixture) -> 
 
     if verify_call_res.is_ok() {
         info!("SP1 proof verified successfully using {sp1_verifier_addr:?}!");
+        Ok(())
     } else {
-        error!("SP1 proof verification failed: {verify_call_res:?}!");
+        error!("SP1 proof verification failed on {sp1_verifier_addr:?}: {verify_call_res:?}!");
+        Err(ProverError::VerificationError(format!(
+            "SP1 proof verification failed on {sp1_verifier_addr:?}: {verify_call_res:?}"
+        )))
     }
-
-    Ok(())
 }
