@@ -8,7 +8,7 @@ use serde::Deserialize;
 use tokio_util::sync::CancellationToken;
 
 mod client;
-pub mod scenarios;
+mod scenarios;
 
 pub use client::ProofClient;
 

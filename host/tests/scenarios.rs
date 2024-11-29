@@ -1,10 +1,12 @@
 use raiko_host::server::api::{v1, v2};
 use raiko_tasks::TaskStatus;
 
-use crate::common::{make_request, start_raiko, ProofClient};
+use crate::{make_request, start_raiko, ProofClient};
 
 /// Test v1 API interface.
-pub async fn test_v1_api_format() -> anyhow::Result<()> {
+#[tokio::test]
+#[ignore]
+async fn integration_test_v1_api_format() -> anyhow::Result<()> {
     let token = start_raiko().await.expect("Failed to start Raiko server");
 
     // Send a proof request to the server.
@@ -29,7 +31,9 @@ pub async fn test_v1_api_format() -> anyhow::Result<()> {
 
 /// Test v2 API response for a initial proof request and for requesting the proof status on further
 /// requests.
-pub async fn test_v2_api_response() -> anyhow::Result<()> {
+#[tokio::test]
+#[ignore]
+async fn integration_test_v2_api_response() -> anyhow::Result<()> {
     let token = start_raiko().await.expect("Failed to start Raiko server");
 
     // Send a proof request to the server.
@@ -84,7 +88,9 @@ pub async fn test_v2_api_response() -> anyhow::Result<()> {
 }
 
 /// Test the v2 API cancellation behavior.
-pub async fn test_v2_cancellation() -> anyhow::Result<()> {
+#[tokio::test]
+#[ignore]
+async fn integration_test_v2_cancellation() -> anyhow::Result<()> {
     let token = start_raiko().await.expect("Failed to start Raiko server");
 
     // Send a proof request to the server.
@@ -145,7 +151,9 @@ pub async fn test_v2_cancellation() -> anyhow::Result<()> {
 }
 
 /// Test the v2 API report functionality before and after sending a request.
-pub async fn test_v2_report() -> anyhow::Result<()> {
+#[tokio::test]
+#[ignore]
+async fn integration_test_v2_report() -> anyhow::Result<()> {
     let token = start_raiko().await.expect("Failed to start Raiko server");
     // Send a proof request to the server.
     let client = ProofClient::new();
@@ -185,7 +193,9 @@ pub async fn test_v2_report() -> anyhow::Result<()> {
 }
 
 /// Test the v2 API pruning functionality after having requests in the task db.
-pub async fn test_v2_prune() -> anyhow::Result<()> {
+#[tokio::test]
+#[ignore]
+async fn integration_test_v2_prune() -> anyhow::Result<()> {
     let token = start_raiko().await.expect("Failed to start Raiko server");
     // Send a proof request to the server.
     let client = ProofClient::new();
