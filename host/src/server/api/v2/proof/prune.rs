@@ -12,9 +12,7 @@ use raiko_reqactor::Gateway;
 )]
 // #[debug_handler(state = Gateway<P>)]
 /// Prune all tasks.
-async fn prune_handler<P: raiko_reqpool::Pool + 'static>(
-    State(_gateway): State<Gateway<P>>,
-) -> HostResult<PruneStatus> {
+async fn prune_handler(State(_gateway): State<Gateway>) -> HostResult<PruneStatus> {
     todo!()
 }
 
@@ -26,6 +24,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router<P: raiko_reqpool::Pool + 'static>() -> Router<Gateway<P>> {
+pub fn create_router() -> Router<Gateway> {
     Router::new().route("/", post(prune_handler::<P>))
 }

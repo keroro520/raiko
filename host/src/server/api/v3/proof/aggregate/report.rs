@@ -15,8 +15,8 @@ use raiko_reqactor::Gateway;
 /// List all aggregation tasks.
 ///
 /// Retrieve a list of aggregation task reports.
-async fn report_handler<P: raiko_reqpool::Pool + 'static>(
-    State(_gateway): State<Gateway<P>>,
+async fn report_handler(
+    State(_gateway): State<Gateway>,
 ) -> HostResult<Json<AggregationTaskReport>> {
     todo!()
 }
@@ -29,6 +29,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router<P: raiko_reqpool::Pool + 'static>() -> Router<Gateway<P>> {
+pub fn create_router() -> Router<Gateway> {
     Router::new().route("/", get(report_handler::<P>))
 }

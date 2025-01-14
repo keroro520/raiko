@@ -11,9 +11,7 @@ use raiko_reqactor::Gateway;
         (status = 200, description = "Successfully listed all proofs & Ids", body = CancelStatus)
     )
 )]
-async fn list_handler<P: raiko_reqpool::Pool + 'static>(
-    State(_gateway): State<Gateway<P>>,
-) -> HostResult<Json<Value>> {
+async fn list_handler(State(_gateway): State<Gateway>) -> HostResult<Json<Value>> {
     todo!()
 }
 
@@ -25,6 +23,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router<P: raiko_reqpool::Pool + 'static>() -> Router<Gateway<P>> {
+pub fn create_router() -> Router<Gateway> {
     Router::new().route("/", get(list_handler::<P>))
 }

@@ -52,6 +52,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router<P: raiko_reqpool::Pool + 'static>() -> Router<Gateway<P>> {
+pub fn create_router() -> Router<Gateway> {
     Router::new().route("/", get(metrics_handler))
 }

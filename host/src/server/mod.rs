@@ -12,7 +12,7 @@ pub use handler::{cancel, cancel_aggregation, prove, prove_aggregation};
 pub use utils::{to_v2_cancel_status, to_v2_result, to_v3_cancel_status, to_v3_result};
 
 /// Starts the proverd server.
-pub async fn serve<P: raiko_reqpool::Pool + 'static>(
+pub async fn serve(
     gateway: raiko_reqactor::Gateway<P>,
     address: &str,
     concurrency_limit: usize,

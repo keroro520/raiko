@@ -117,9 +117,7 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     })
 }
 
-pub fn create_router<P: raiko_reqpool::Pool + 'static>(
-    concurrency_limit: usize,
-) -> Router<Gateway<P>> {
+pub fn create_router(concurrency_limit: usize) -> Router<Gateway> {
     let docs = create_docs();
 
     Router::new()

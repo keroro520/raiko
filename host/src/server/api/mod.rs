@@ -19,10 +19,7 @@ pub mod v3;
 
 pub const MAX_BODY_SIZE: usize = 1 << 20;
 
-pub fn create_router<P: raiko_reqpool::Pool + 'static>(
-    concurrency_limit: usize,
-    jwt_secret: Option<&str>,
-) -> Router<Gateway<P>> {
+pub fn create_router(concurrency_limit: usize, jwt_secret: Option<&str>) -> Router<Gateway> {
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
         .allow_headers([

@@ -21,7 +21,7 @@ async fn main() -> HostResult<()> {
     let chain_specs = parse_chain_specs(&opts);
 
     // Start pool
-    let pool = raiko_reqpool::RedisPool::open(RedisPoolConfig {
+    let pool = raiko_reqpool::Pool::open(RedisPoolConfig {
         redis_url: opts.redis_url.clone(),
         redis_ttl: opts.redis_ttl,
     })

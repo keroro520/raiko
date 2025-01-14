@@ -32,8 +32,8 @@ pub mod report;
 /// - sgx - uses the sgx environment to construct a block and produce proof of execution
 /// - sp1 - uses the sp1 prover
 /// - risc0 - uses the risc0 prover
-async fn proof_handler<P: raiko_reqpool::Pool>(
-    State(gateway): State<Gateway<P>>,
+async fn proof_handler(
+    State(gateway): State<Gateway>,
     Json(req): Json<Value>,
 ) -> HostResult<Status> {
     inc_current_req();
@@ -98,7 +98,7 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     })
 }
 
-pub fn create_router<P: raiko_reqpool::Pool + 'static>() -> Router<Gateway<P>> {
+pub fn create_router() {
     Router::new()
         .route("/", post(proof_handler))
         .nest("/cancel", cancel::create_router())
