@@ -10,7 +10,7 @@ use crate::{
     interfaces::HostResult,
     server::{api::v2::CancelStatus, to_v2_cancel_status},
 };
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
 #[utoipa::path(post, path = "/proof/cancel",
     tag = "Proving",
@@ -19,7 +19,6 @@ use raiko_reqactor::Gateway;
         (status = 200, description = "Successfully cancelled proof task", body = CancelStatus)
     )
 )]
-// #[debug_handler(state = Gateway)]
 /// Cancel a proof task with requested config.
 ///
 /// Accepts a proof request and cancels a proving task with the specified guest prover.
@@ -29,12 +28,12 @@ use raiko_reqactor::Gateway;
 /// - sp1 - uses the sp1 prover
 /// - risc0 - uses the risc0 prover
 pub async fn cancel_handler(
-    State(gateway): State<Gateway>,
+    State(actor): State<Actor>,
     Json(mut aggregation_request): Json<AggregationRequest>,
 ) -> HostResult<CancelStatus> {
     // Override the existing proof request config from the config file and command line
     // options with the request from the client.
-    let default_request_config = gateway.default_request_config();
+    let default_request_config = actor.default_request_config();
     aggregation_request.merge(default_request_config)?;
 
     let proof_request_opts: Vec<ProofRequestOpt> = aggregation_request.into();
@@ -46,7 +45,7 @@ pub async fn cancel_handler(
         let (chain_id, block_hash) = get_task_data(
             &proof_request.network,
             proof_request.block_number,
-            gateway.chain_specs(),
+            actor.chain_specs(),
         )
         .await?;
 
@@ -67,8 +66,7 @@ pub async fn cancel_handler(
         .collect();
     let agg_request_key = AggregationRequestKey::new(*proof_type, block_numbers);
 
-    let result =
-        crate::server::cancel_aggregation(&gateway, agg_request_key, sub_request_keys).await;
+    let result = crate::server::cancel_aggregation(&actor, agg_request_key, sub_request_keys).await;
     Ok(to_v2_cancel_status(result))
 }
 
@@ -80,6 +78,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router() -> Router<Gateway> {
-    Router::new().route("/", post(cancel_handler::<P>))
+pub fn create_router() -> Router<Actor> {
+    Router::new().route("/", post(cancel_handler))
 }

@@ -5,7 +5,7 @@ use crate::{
 use axum::{extract::State, routing::post, Json, Router};
 use raiko_core::interfaces::AggregationOnlyRequest;
 use raiko_lib::proof_type::ProofType;
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 use raiko_reqpool::AggregationRequestKey;
 use std::str::FromStr;
 use utoipa::OpenApi;
@@ -17,7 +17,6 @@ use utoipa::OpenApi;
         (status = 200, description = "Successfully cancelled proof aggregation task", body = CancelStatus)
     )
 )]
-// #[debug_handler(state = Gateway)]
 /// Cancel a proof aggregation task with requested config.
 ///
 /// Accepts a proof aggregation request and cancels a proving task with the specified guest prover.
@@ -27,12 +26,12 @@ use utoipa::OpenApi;
 /// - sp1 - uses the sp1 prover
 /// - risc0 - uses the risc0 prover
 async fn cancel_handler(
-    State(gateway): State<Gateway>,
+    State(actor): State<Actor>,
     Json(mut aggregation_request): Json<AggregationOnlyRequest>,
 ) -> HostResult<CancelStatus> {
     // Override the existing proof request config from the config file and command line
     // options with the request from the client.
-    aggregation_request.merge(&gateway.default_request_config())?;
+    aggregation_request.merge(&actor.default_request_config())?;
 
     let proof_type = ProofType::from_str(
         aggregation_request
@@ -43,7 +42,7 @@ async fn cancel_handler(
     .map_err(HostError::Conversion)?;
     let agg_request_key =
         AggregationRequestKey::new(proof_type, aggregation_request.aggregation_ids).into();
-    let result = crate::server::cancel(&gateway, agg_request_key).await;
+    let result = crate::server::cancel(&actor, agg_request_key).await;
     Ok(to_v2_cancel_status(result))
 }
 
@@ -55,6 +54,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router() -> Router<Gateway> {
-    Router::new().route("/", post(cancel_handler::<P>))
+pub fn create_router() -> Router<Actor> {
+    Router::new().route("/", post(cancel_handler))
 }

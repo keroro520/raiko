@@ -12,7 +12,7 @@ use raiko_core::{
     interfaces::{AggregationRequest, ProofRequest, ProofRequestOpt},
     provider::get_task_data,
 };
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 use raiko_reqpool::{
     AggregationRequestEntity, AggregationRequestKey, SingleProofRequestEntity,
     SingleProofRequestKey,
@@ -29,7 +29,6 @@ mod cancel;
         (status = 200, description = "Successfully submitted proof task, queried tasks in progress or retrieved proof.", body = Status)
     )
 )]
-// #[debug_handler(state = Gateway)]
 /// Submit a proof aggregation task with requested config, get task status or get proof value.
 ///
 /// Accepts a proof request and creates a proving task with the specified guest prover.
@@ -39,14 +38,14 @@ mod cancel;
 /// - sp1 - uses the sp1 prover
 /// - risc0 - uses the risc0 prover
 async fn proof_handler(
-    State(gateway): State<Gateway>,
+    State(actor): State<Actor>,
     Json(mut aggregation_request): Json<AggregationRequest>,
 ) -> HostResult<Status> {
     inc_current_req();
 
     // Override the existing proof request config from the config file and command line
     // options with the request from the client.
-    aggregation_request.merge(&gateway.default_request_config())?;
+    aggregation_request.merge(&actor.default_request_config())?;
 
     let proof_request_opts: Vec<ProofRequestOpt> = aggregation_request.clone().into();
 
@@ -66,7 +65,7 @@ async fn proof_handler(
         let (chain_id, blockhash) = get_task_data(
             &proof_request.network,
             proof_request.block_number,
-            gateway.chain_specs(),
+            actor.chain_specs(),
         )
         .await?;
 
@@ -108,7 +107,7 @@ async fn proof_handler(
     );
 
     let result = prove_aggregation(
-        &gateway,
+        &actor,
         agg_request_key,
         agg_request_entity_without_proofs,
         sub_request_keys,
@@ -137,7 +136,7 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     })
 }
 
-pub fn create_router() -> Router<Gateway> {
+pub fn create_router() -> Router<Actor> {
     Router::new()
         .route("/", post(proof_handler))
         .nest("/cancel", cancel::create_router())

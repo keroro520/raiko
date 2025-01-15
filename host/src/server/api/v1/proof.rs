@@ -3,7 +3,7 @@ use serde_json::Value;
 use utoipa::OpenApi;
 
 use crate::{interfaces::HostResult, server::api::v1::Status};
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
 #[utoipa::path(post, path = "/proof",
     tag = "Proving",
@@ -12,7 +12,6 @@ use raiko_reqactor::Gateway;
         (status = 200, description = "Successfully created proof for request", body = Status)
     )
 )]
-// #[debug_handler(state = Gateway)]
 /// Generate a proof for requested config.
 ///
 /// Accepts a proof request and generates a proof with the specified guest prover.
@@ -22,7 +21,7 @@ use raiko_reqactor::Gateway;
 /// - sp1 - uses the sp1 prover
 /// - risc0 - uses the risc0 prover
 async fn proof_handler(
-    State(_gateway): State<Gateway>,
+    State(_actor): State<Actor>,
     Json(_req): Json<Value>,
 ) -> HostResult<Json<Status>> {
     unreachable!("deprecated")
@@ -36,6 +35,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router() -> Router<Gateway> {
+pub fn create_router() -> Router<Actor> {
     Router::new().route("/", post(proof_handler))
 }

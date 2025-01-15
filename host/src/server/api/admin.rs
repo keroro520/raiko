@@ -1,13 +1,13 @@
 use axum::{extract::State, routing::post, Router};
 
 use crate::interfaces::HostResult;
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
-pub fn create_router() -> Router<Gateway> {
+pub fn create_router() -> Router<Actor> {
     Router::new().route("/admin/pause", post(pause))
 }
 
-async fn pause(State(gateway): State<Gateway>) -> HostResult<&'static str> {
-    gateway.pause().await.map_err(|e| anyhow::anyhow!(e))?;
+async fn pause(State(actor): State<Actor>) -> HostResult<&'static str> {
+    actor.pause().await.map_err(|e| anyhow::anyhow!(e))?;
     Ok("System paused successfully")
 }

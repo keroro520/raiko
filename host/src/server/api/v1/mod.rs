@@ -8,7 +8,7 @@ use utoipa_scalar::{Scalar, Servable};
 use utoipa_swagger_ui::SwaggerUi;
 
 use crate::interfaces::HostError;
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
 pub mod health;
 pub mod metrics;
@@ -117,7 +117,7 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     })
 }
 
-pub fn create_router(concurrency_limit: usize) -> Router<Gateway> {
+pub fn create_router(concurrency_limit: usize) -> Router<Actor> {
     let docs = create_docs();
 
     Router::new()

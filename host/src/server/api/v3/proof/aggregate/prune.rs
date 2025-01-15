@@ -2,7 +2,7 @@ use axum::{extract::State, routing::post, Router};
 use utoipa::OpenApi;
 
 use crate::{interfaces::HostResult, server::api::v2::PruneStatus};
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
 #[utoipa::path(post, path = "/proof/aggregate/prune",
     tag = "Proving",
@@ -11,7 +11,7 @@ use raiko_reqactor::Gateway;
     )
 )]
 /// Prune all aggregation tasks.
-async fn prune_handler(State(_gateway): State<Gateway>) -> HostResult<PruneStatus> {
+async fn prune_handler(State(_actor): State<Actor>) -> HostResult<PruneStatus> {
     todo!()
 }
 
@@ -23,6 +23,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router() -> Router<Gateway> {
-    Router::new().route("/", post(prune_handler::<P>))
+pub fn create_router() -> Router<Actor> {
+    Router::new().route("/", post(prune_handler))
 }

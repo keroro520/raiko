@@ -9,7 +9,7 @@ use crate::{
     metrics::{inc_current_req, inc_guest_req_count, inc_host_req_count},
     server::{api::v2::Status, to_v2_result},
 };
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
 pub mod cancel;
 pub mod list;
@@ -23,7 +23,6 @@ pub mod report;
         (status = 200, description = "Successfully submitted proof task, queried tasks in progress or retrieved proof.", body = Status)
     )
 )]
-// #[debug_handler(state = Gateway)]
 /// Submit a proof task with requested config, get task status or get proof value.
 ///
 /// Accepts a proof request and creates a proving task with the specified guest prover.
@@ -32,15 +31,12 @@ pub mod report;
 /// - sgx - uses the sgx environment to construct a block and produce proof of execution
 /// - sp1 - uses the sp1 prover
 /// - risc0 - uses the risc0 prover
-async fn proof_handler(
-    State(gateway): State<Gateway>,
-    Json(req): Json<Value>,
-) -> HostResult<Status> {
+async fn proof_handler(State(actor): State<Actor>, Json(req): Json<Value>) -> HostResult<Status> {
     inc_current_req();
 
     // Override the existing proof request config from the config file and command line
     // options with the request from the client.
-    let mut config = gateway.default_request_config().clone();
+    let mut config = actor.default_request_config().clone();
     config.merge(&req)?;
 
     // Construct the actual proof request from the available configs.
@@ -51,7 +47,7 @@ async fn proof_handler(
     let (chain_id, blockhash) = get_task_data(
         &proof_request.network,
         proof_request.block_number,
-        gateway.chain_specs(),
+        actor.chain_specs(),
     )
     .await?;
 
@@ -76,7 +72,7 @@ async fn proof_handler(
     )
     .into();
 
-    let result = crate::server::prove(&gateway, request_key, request_entity).await;
+    let result = crate::server::prove(&actor, request_key, request_entity).await;
     Ok(to_v2_result(result))
 }
 
@@ -98,7 +94,7 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     })
 }
 
-pub fn create_router() {
+pub fn create_router() -> Router<Actor> {
     Router::new()
         .route("/", post(proof_handler))
         .nest("/cancel", cancel::create_router())

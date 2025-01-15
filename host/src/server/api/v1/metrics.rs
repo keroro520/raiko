@@ -3,7 +3,7 @@ use prometheus::{Encoder, TextEncoder};
 use utoipa::OpenApi;
 
 use crate::interfaces::HostResult;
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
 #[utoipa::path(
     get,
@@ -52,6 +52,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router() -> Router<Gateway> {
+pub fn create_router() -> Router<Actor> {
     Router::new().route("/", get(metrics_handler))
 }

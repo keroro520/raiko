@@ -1,7 +1,7 @@
 use axum::{http::StatusCode, routing::get, Router};
 use utoipa::OpenApi;
 
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
 #[utoipa::path(
     get,
@@ -11,7 +11,6 @@ use raiko_reqactor::Gateway;
         (status = 200, description = "Proverd server is healthy"),
     )
 )]
-// #[debug_handler(state = Gateway)]
 /// Health check
 ///
 /// Currently only responds with an OK status.
@@ -28,6 +27,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router() -> Router<Gateway> {
+pub fn create_router() -> Router<Actor> {
     Router::new().route("/", get(health_handler))
 }

@@ -13,7 +13,7 @@ pub use utils::{to_v2_cancel_status, to_v2_result, to_v3_cancel_status, to_v3_re
 
 /// Starts the proverd server.
 pub async fn serve(
-    gateway: raiko_reqactor::Gateway<P>,
+    actor: raiko_reqactor::Actor,
     address: &str,
     concurrency_limit: usize,
     jwt_secret: Option<String>,
@@ -24,7 +24,7 @@ pub async fn serve(
 
     info!("Listening on: {}", listener.local_addr()?);
 
-    let router = create_router(concurrency_limit, jwt_secret.as_deref()).with_state(gateway);
+    let router = create_router(concurrency_limit, jwt_secret.as_deref()).with_state(actor);
     axum::serve(listener, router)
         .await
         .context("Server couldn't serve")?;

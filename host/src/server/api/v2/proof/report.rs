@@ -3,7 +3,7 @@ use serde_json::Value;
 use utoipa::OpenApi;
 
 use crate::interfaces::HostResult;
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
 #[utoipa::path(post, path = "/proof/report",
     tag = "Proving",
@@ -11,11 +11,10 @@ use raiko_reqactor::Gateway;
         (status = 200, description = "Successfully listed all current tasks", body = CancelStatus)
     )
 )]
-// #[debug_handler(state = Gateway)]
 /// List all tasks.
 ///
 /// Retrieve a list of `{ chain_id, blockhash, prover_type, prover, status }` items.
-async fn report_handler(State(_gateway): State<Gateway>) -> HostResult<Json<Value>> {
+async fn report_handler(State(_actor): State<Actor>) -> HostResult<Json<Value>> {
     todo!()
 }
 
@@ -27,6 +26,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router() -> Router<Gateway> {
-    Router::new().route("/", get(report_handler::<P>))
+pub fn create_router() -> Router<Actor> {
+    Router::new().route("/", get(report_handler))
 }

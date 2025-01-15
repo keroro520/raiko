@@ -8,7 +8,7 @@ use crate::{
     interfaces::HostResult,
     server::{api::v2::CancelStatus, to_v2_cancel_status},
 };
-use raiko_reqactor::Gateway;
+use raiko_reqactor::Actor;
 
 #[utoipa::path(post, path = "/proof/cancel",
     tag = "Proving",
@@ -17,7 +17,6 @@ use raiko_reqactor::Gateway;
         (status = 200, description = "Successfully cancelled proof task", body = CancelStatus)
     )
 )]
-// #[debug_handler(state = Gateway)]
 /// Cancel a proof task with requested config.
 ///
 /// Accepts a proof request and cancels a proving task with the specified guest prover.
@@ -27,12 +26,12 @@ use raiko_reqactor::Gateway;
 /// - sp1 - uses the sp1 prover
 /// - risc0 - uses the risc0 prover
 async fn cancel_handler(
-    State(gateway): State<Gateway>,
+    State(actor): State<Actor>,
     Json(req): Json<Value>,
 ) -> HostResult<CancelStatus> {
     // Override the existing proof request config from the config file and command line
     // options with the request from the client.
-    let mut config = gateway.default_request_config().to_owned();
+    let mut config = actor.default_request_config().to_owned();
     config.merge(&req)?;
 
     // Construct the actual proof request from the available configs.
@@ -41,7 +40,7 @@ async fn cancel_handler(
     let (chain_id, block_hash) = get_task_data(
         &proof_request.network,
         proof_request.block_number,
-        gateway.chain_specs(),
+        actor.chain_specs(),
     )
     .await?;
 
@@ -53,7 +52,7 @@ async fn cancel_handler(
         proof_request.prover.clone().to_string(),
     )
     .into();
-    let result = crate::server::cancel(&gateway, request_key).await;
+    let result = crate::server::cancel(&actor, request_key).await;
 
     Ok(to_v2_cancel_status(result))
 }
@@ -66,6 +65,6 @@ pub fn create_docs() -> utoipa::openapi::OpenApi {
     Docs::openapi()
 }
 
-pub fn create_router() -> Router<Gateway> {
+pub fn create_router() -> Router<Actor> {
     Router::new().route("/", post(cancel_handler))
 }
