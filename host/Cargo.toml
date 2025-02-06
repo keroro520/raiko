@@ -17,6 +17,7 @@ raiko-core = { workspace = true }
 raiko-tasks = { workspace = true }
 raiko-reqpool = { workspace = true }
 raiko-reqactor = { workspace = true }
+raiko-ballot = { workspace = true }
 
 # alloy
 alloy-rlp = { workspace = true }
@@ -92,7 +93,6 @@ sp1 = ["raiko-core/sp1"]
 risc0 = ["raiko-core/risc0"]
 sgx = ["raiko-core/sgx"]
 integration = []
-test-utils = ["raiko-core/test-utils"]
 
 [[bin]]
 name = "raiko-host"
