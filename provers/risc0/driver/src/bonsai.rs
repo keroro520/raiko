@@ -96,10 +96,11 @@ pub async fn verify_bonsai_receipt<O: Eq + Debug + DeserializeOwned>(
                 .verify(image_id)
                 .expect("Receipt verification failed");
             // verify output
-            let receipt_output: O = receipt
+            let (cycles, receipt_output): (u64, O) = receipt
                 .journal
                 .decode()
                 .map_err(|e| BonsaiExecutionError::Other(e.to_string()))?;
+            info!("bilibili cycles: {cycles}");
             if expected_output == &receipt_output {
                 info!("Receipt validated!");
             } else {
@@ -222,7 +223,8 @@ pub async fn maybe_prove<I: Serialize, O: Eq + Debug + Serialize + DeserializeOw
     debug!("journal: {:?}", receipt.journal);
 
     // verify output
-    let output_guest: O = receipt.journal.decode().unwrap();
+    let (cycles, output_guest): (u64, O) = receipt.journal.decode().unwrap();
+    info!("bilibili cycles: {cycles}");
     if expected_output == &output_guest {
         info!("Prover succeeded");
     } else {
