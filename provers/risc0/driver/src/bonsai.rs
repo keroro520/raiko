@@ -222,7 +222,8 @@ pub async fn maybe_prove<I: Serialize, O: Eq + Debug + Serialize + DeserializeOw
     debug!("journal: {:?}", receipt.journal);
 
     // verify output
-    let output_guest: O = receipt.journal.decode().unwrap();
+    let (cycles, output_guest): (u64, O) = receipt.journal.decode().unwrap();
+    info!("bilibili cycles: {cycles}");
     if expected_output == &output_guest {
         info!("Prover succeeded");
     } else {

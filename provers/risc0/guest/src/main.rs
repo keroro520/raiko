@@ -13,6 +13,8 @@ pub mod mem;
 pub use mem::*;
 
 fn main() {
+    let start_cycles = env::cycle_count();
+
     let input: GuestInput = env::read();
 
     revm_precompile::zk_op::ZKVM_OPERATOR.get_or_init(|| Box::new(Risc0Operator {}));
@@ -24,6 +26,10 @@ fn main() {
     let pi = ProtocolInstance::new(&input, &header, ProofType::Risc0)
         .unwrap()
         .instance_hash();
+
+    let end_cycles = env::cycle_count();
+    let total_cycles = end_cycles - start_cycles;
+    env::commit(&total_cycles);
 
     env::commit(&pi);
 }
