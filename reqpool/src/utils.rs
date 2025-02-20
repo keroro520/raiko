@@ -15,12 +15,14 @@ pub fn proof_key_to_hack_request_key(proof_key: ProofKey) -> RequestKey {
     // HACK: Use a special prover address as a mask, to distinguish from real
     // RequestKeys
     let hack_prover_address = String::from("0x1231231231231231231231231231231231231231");
+    let hack_image_id = String::from("0x1231231231231231231231231231231231231231");
 
     SingleProofRequestKey::new(
         chain_id,
         block_number,
         block_hash,
         ProofType::try_from(proof_type).expect("unsupported proof type, it should not happen at proof_key_to_hack_request_key, please issue a bug report"),
+        hack_image_id,
         hack_prover_address,
     )
     .into()

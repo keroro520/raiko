@@ -187,6 +187,7 @@ mod tests {
             1,
             B256::default(),
             ProofType::default(),
+            String::new(),
             "test_prover".to_string(),
         ));
         let request_entity = RequestEntity::SingleProof(SingleProofRequestEntity::new(
@@ -197,6 +198,7 @@ mod tests {
             B256::default(),
             Address::default(),
             ProofType::default(),
+            String::new(),
             BlobProofType::default(),
             HashMap::new(),
         ));

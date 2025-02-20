@@ -122,6 +122,11 @@ pub struct SingleProofRequestKey {
     block_hash: B256,
     /// The proof type of the request
     proof_type: ProofType,
+    /// The image ID of the prover.
+    /// For SP1 and RISC0 proof type, it is the image ID identify the guest program;
+    /// for SGX proof type, it is the image ID identify the instance id of enclave;
+    /// For Native proof type, it is the image ID is always empty.
+    image_id: String,
     /// The prover of the request
     prover_address: String,
 }
@@ -132,6 +137,7 @@ impl SingleProofRequestKey {
         block_number: u64,
         block_hash: B256,
         proof_type: ProofType,
+        image_id: String,
         prover_address: String,
     ) -> Self {
         Self {
@@ -139,6 +145,7 @@ impl SingleProofRequestKey {
             block_number,
             block_hash,
             proof_type,
+            image_id,
             prover_address,
         }
     }
@@ -151,13 +158,19 @@ impl SingleProofRequestKey {
 pub struct AggregationRequestKey {
     // TODO add chain_id
     proof_type: ProofType,
+    /// The image ID of the prover.
+    /// For SP1 and RISC0 proof type, it is the image ID identify the guest program;
+    /// for SGX proof type, it is the image ID identify the instance id of enclave;
+    /// For Native proof type, it is the image ID is always empty.
+    image_id: String,
     block_numbers: Vec<u64>,
 }
 
 impl AggregationRequestKey {
-    pub fn new(proof_type: ProofType, block_numbers: Vec<u64>) -> Self {
+    pub fn new(proof_type: ProofType, image_id: String, block_numbers: Vec<u64>) -> Self {
         Self {
             proof_type,
+            image_id,
             block_numbers,
         }
     }
@@ -193,6 +206,11 @@ pub struct SingleProofRequestEntity {
     prover: Address,
     /// The proof type.
     proof_type: ProofType,
+    /// The image ID of the prover.
+    /// For SP1 and RISC0 proof type, it is the image ID identify the guest program;
+    /// for SGX proof type, it is the image ID identify the instance id of enclave;
+    /// For Native proof type, it is the image ID is always empty.
+    image_id: String,
     /// Blob proof type.
     blob_proof_type: BlobProofType,
     #[serde(flatten)]
@@ -209,6 +227,7 @@ impl SingleProofRequestEntity {
         graffiti: B256,
         prover: Address,
         proof_type: ProofType,
+        image_id: String,
         blob_proof_type: BlobProofType,
         prover_args: HashMap<String, serde_json::Value>,
     ) -> Self {
@@ -220,6 +239,7 @@ impl SingleProofRequestEntity {
             graffiti,
             prover,
             proof_type,
+            image_id,
             blob_proof_type,
             prover_args,
         }
@@ -234,6 +254,11 @@ pub struct AggregationRequestEntity {
     proofs: Vec<Proof>,
     /// The proof type.
     proof_type: ProofType,
+    /// The image ID of the prover.
+    /// For SP1 and RISC0 proof type, it is the image ID identify the guest program;
+    /// for SGX proof type, it is the image ID identify the instance id of enclave;
+    /// For Native proof type, it is the image ID is always empty.
+    image_id: String,
     #[serde(flatten)]
     /// Any additional prover params in JSON format.
     prover_args: ProverSpecificOpts,
@@ -244,12 +269,14 @@ impl AggregationRequestEntity {
         aggregation_ids: Vec<u64>,
         proofs: Vec<Proof>,
         proof_type: ProofType,
+        image_id: String,
         prover_args: ProverSpecificOpts,
     ) -> Self {
         Self {
             aggregation_ids,
             proofs,
             proof_type,
+            image_id,
             prover_args,
         }
     }
