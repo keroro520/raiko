@@ -1,4 +1,5 @@
 use crate::server::api::{v2, v3};
+use raiko_core::interfaces::ProofRequest;
 use raiko_lib::proof_type::ProofType;
 use raiko_reqpool::Status;
 use raiko_tasks::TaskStatus;
@@ -58,3 +59,29 @@ pub fn to_v3_status(proof_type: ProofType, result: Result<Status, String>) -> v3
 pub fn to_v3_cancel_status(result: Result<Status, String>) -> v3::CancelStatus {
     to_v2_cancel_status(result)
 }
+
+// /// Macro to extract an ID from prover args based on proof type and field name
+// macro_rules! extract_image_id {
+//     ($prover_args:expr, $proof_type:expr, $field:expr) => {
+//         $prover_args
+//             .get($proof_type)
+//             .expect(&assertion_message)
+//             .get($field)
+//             .expect(&assertion_message)
+//             .as_str()
+//             .expect(&assertion_message)
+//             .to_string()
+//     };
+// }
+
+// /// Extract the image ID from the proof request, or return the default image ID if not set.
+// pub fn extract_image_id_from_request(request: &ProofRequest) -> String {
+//     let assertion_message = format!("failed to get image id of request {:?}", request);
+//     let prover_args = &request.prover_args;
+//     match request.proof_type {
+//         ProofType::Native => String::new(),
+//         ProofType::Sgx => extract_image_id!(prover_args, "sgx", "instance_id"),
+//         ProofType::Sp1 =>
+//         ProofType::Risc0 => extract_image_id!(prover_args, "risc0", "image_id"),
+//     }
+// }
